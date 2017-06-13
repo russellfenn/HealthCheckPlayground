@@ -1,12 +1,12 @@
 """Simple Target to play with Docker HEALTHCHECK commands
 """
 
+import os
 import platform
 import sys
 from bottle import Bottle, run, view, abort, response
 
 app = Bottle(catchall=False)
-app.catchall = False
 hits = 0
 host = platform.node()
 healthy = True
@@ -31,10 +31,12 @@ def poison():
     healthy = False
     return "Oh no, I'm sick"
 
+
 @app.route('/die')
 def die():
     """Quit this instance immediately"""
-    sys.exit(1)
+    os.abort()
+
 
 @app.route('/status')
 def status():
@@ -45,4 +47,4 @@ def status():
             'healthy': healthy}
 
 if __name__ == "__main__":
-    run(app, host="0.0.0.0", port=10000)
+    run(app, host="0.0.0.0", port=10000, quiet=False)
