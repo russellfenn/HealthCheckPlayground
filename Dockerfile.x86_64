@@ -1,0 +1,21 @@
+FROM python:3.6-alpine
+
+LABEL org.label-schema.vendor = "Russell Fenn <rfenn@vt.edu>" \
+      org.label-schema.name = "Health Check Playground" \
+      org.label-schema.description = "A target for learning about Docker health checks" \
+      org.label-schema.schema-version = "1.0"
+
+RUN mkdir /apps && adduser -h /apps/local -u 235 -D appsadm appsadm && \
+    apk --update add tzdata curl && \
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime
+    
+ENV INSTALL_PATH /hcp
+COPY ./requirements.txt $INSTALL_PATH/requirements.txt
+RUN pip install -r $INSTALL_PATH/requirements.txt
+
+COPY views $INSTALL_PATH
+COPY hcp.py $INSTALL_PATH
+WORKDIR $INSTALL_PATH
+EXPOSE 10000
+USER appsadm
+ENTRYPOINT ["python", "hcp.py"]

@@ -1,0 +1,29 @@
+# Stack file to deploy several instances of health check playground
+version: "3.0"
+
+services:
+  hcp:
+    image: rfenn/health-check-playground:201706081645
+    ports:
+      - "10000:10000"
+    entrypoint: ["/usr/local/bin/gunicorn",
+                 "-w", "1",
+                 "-b", ":10000",
+                 "--access-logfile", "-",
+                 "hcp:app"]
+    #entrypoint: ["python", "hcp.py"]
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 5
+        window: 30s
+      update_config:
+        parallelism: 2
+        delay: 5s
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      test: ["CMD", "curl", "-sf", "http://localhost:10000/"]
