@@ -1,4 +1,15 @@
 # Stack file to deploy several instances of health check playground
+#
+# Note: There are 2 entrypoints... the second one overrides the first.
+#
+#       Gunicorn entrypoint (1): provides a nice log showing the task name,
+#                                Run this with tty: false, the other entrypoint commented ('#').
+#
+#       Python entrypoint (2): Supports the 'die' endpoint to kill the container.
+#                              Use this one with tty: true
+#
+#       See README.md for details
+
 version: "3.0"
 
 services:
@@ -7,12 +18,12 @@ services:
     ports:
       - "10000:10000"
     entrypoint: ["/usr/local/bin/gunicorn",
-                 "-w", "1",
+                 "-w", "4",
                  "-b", ":10000",
                  "--access-logfile", "-",
                  "hcp:app"]
-    entrypoint: ["python", "hcp.py"]
-    tty: true
+    #entrypoint: ["python", "hcp.py"]
+    tty: false
     deploy:
       replicas: 4
       restart_policy:
