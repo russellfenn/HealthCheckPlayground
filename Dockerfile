@@ -11,6 +11,7 @@ RUN apk --no-cache \
     && pip install \
        bottle \
        gunicorn \
+       prometheus_client \
     && rm -rf /root/.cache/pip \
     && rm -rf /lib/apk/db    
 
