@@ -1,0 +1,38 @@
+# Stack file to deploy several instances of health check playground
+#
+# Note: There are 2 entrypoints... the second one overrides the first.
+#
+#       Gunicorn entrypoint (1): provides a nice log showing the task name,
+#                                Run this with tty: false, the other entrypoint commented ('#').
+#
+#       Python entrypoint (2): Supports the 'die' endpoint to kill the container.
+#                              Use this one with tty: true
+#
+#       See README.md for details
+
+version: "3.7"
+
+services:
+  hcp:
+    image: rfenn/healthcheckplayground:20181011
+    ports:
+      - target: 10000
+        published: 10000
+        protocol: tcp
+    command: ["python", "hcp.py"]
+    tty: true
+    deploy:
+      replicas: 14
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 30s
+      update_config:
+        parallelism: 2
+        delay: 5s
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      test: ["CMD", "curl", "-sf", "http://localhost:10000/"]

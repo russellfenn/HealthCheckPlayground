@@ -21,7 +21,7 @@ def index():
     if healthy:
         return dict(hits=hits, host=host)
     else:
-        abort(410, "{} is sick".format(host))
+        abort(410, f"{host} is sick")
 
 
 @app.route('/poison')
@@ -29,7 +29,7 @@ def poison():
     """Make this instance unhealthy so it fails the health check"""
     global healthy
     healthy = False
-    return "Oh no, I'm sick"
+    return f"I'm {host} and I don't feel well"
 
 
 @app.route('/die')
